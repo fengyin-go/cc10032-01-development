@@ -1,0 +1,722 @@
+{
+  "domain": "数据工程",
+  "subdirection": "数据分析与数据应用",
+  "app_name": "实时计算服务中心",
+  "app_slug": "cc10032",
+  "app_desc": "面向实时数据分析场景，提供流式计算定义、窗口聚合、策略告警和状态管理的实时数据平台",
+  "frontend": "vue",
+  "backend": "python",
+  "port_frontend": 5173,
+  "port_backend": 8000,
+  "modules": [
+    {
+      "key": "stream_source",
+      "name": "流式源端",
+      "entity": "数据源配置",
+      "fields": [
+        "源端名称",
+        "消息队列",
+        "Topic名称",
+        "数据格式",
+        "反序列化",
+        "起始位点",
+        "消费者组"
+      ],
+      "statuses": [
+        "草稿",
+        "已接入",
+        "已下线",
+        "异常断连"
+      ],
+      "actions": [
+        "正式接入",
+        "下线上线"
+      ],
+      "action_targets": [
+        "草稿",
+        "已接入"
+      ],
+      "metrics": [
+        "源端总数",
+        "已接入数",
+        "异常数"
+      ],
+      "desc": "管理实时流式数据源的接入配置，包括消息队列、位点和消费者组",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "window_config",
+      "name": "窗口配置",
+      "entity": "窗口策略",
+      "fields": [
+        "策略名称",
+        "窗口类型",
+        "窗口大小",
+        "滑动步长",
+        "水位延迟",
+        "触发策略",
+        "延迟处理"
+      ],
+      "statuses": [
+        "草稿",
+        "已生效",
+        "已停用"
+      ],
+      "actions": [
+        "启用策略",
+        "停用策略"
+      ],
+      "action_targets": [
+        "草稿",
+        "已生效"
+      ],
+      "metrics": [
+        "策略总数",
+        "已生效数",
+        "停用数"
+      ],
+      "desc": "定义流式计算的时间窗口策略，包括滚动窗口、滑动窗口和会话窗口",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "calc_operator",
+      "name": "计算算子",
+      "entity": "算子定义",
+      "fields": [
+        "算子名称",
+        "算子类型",
+        "输入字段",
+        "聚合函数",
+        "分组维度",
+        "输出字段",
+        "状态存活"
+      ],
+      "statuses": [
+        "草稿",
+        "已部署",
+        "运行中",
+        "已停止"
+      ],
+      "actions": [
+        "部署算子",
+        "停止算子"
+      ],
+      "action_targets": [
+        "草稿",
+        "运行中"
+      ],
+      "metrics": [
+        "算子总数",
+        "运行中数",
+        "已停止数"
+      ],
+      "desc": "定义流式计算的核心算子，包括聚合函数、分组维度和状态生命周期",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "state_store",
+      "name": "状态存储",
+      "entity": "状态配置",
+      "fields": [
+        "配置名称",
+        "后端类型",
+        "状态键模式",
+        "TTL时长",
+        "检查点间隔",
+        "增量模式",
+        "清理策略"
+      ],
+      "statuses": [
+        "草稿",
+        "已生效",
+        "已停用"
+      ],
+      "actions": [
+        "启用配置",
+        "停用配置"
+      ],
+      "action_targets": [
+        "草稿",
+        "已生效"
+      ],
+      "metrics": [
+        "配置总数",
+        "已生效数",
+        "停用数"
+      ],
+      "desc": "管理流式任务的有状态存储配置，定义检查点间隔和TTL清理",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "watermark_track",
+      "name": "水位追踪",
+      "entity": "水位记录",
+      "fields": [
+        "水位名称",
+        "数据源",
+        "当前水位",
+        "事件时间",
+        "延迟阈值",
+        "空转时长",
+        "溢出状态"
+      ],
+      "statuses": [
+        "正常",
+        "延迟",
+        "溢出",
+        "空转"
+      ],
+      "actions": [
+        "重置水位",
+        "跳过溢出"
+      ],
+      "action_targets": [
+        "延迟",
+        "溢出"
+      ],
+      "metrics": [
+        "水位总数",
+        "正常数",
+        "延迟数"
+      ],
+      "desc": "追踪各流式数据源的事件时间水位，检测延迟、溢出和空转状态",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "alert_policy",
+      "name": "告警策略",
+      "entity": "告警规则",
+      "fields": [
+        "规则名称",
+        "监控指标",
+        "触发条件",
+        "告警级别",
+        "沉默窗口",
+        "通知方式",
+        "升级路径"
+      ],
+      "statuses": [
+        "草稿",
+        "已启用",
+        "已沉默",
+        "已关闭"
+      ],
+      "actions": [
+        "启用规则",
+        "关闭规则"
+      ],
+      "action_targets": [
+        "草稿",
+        "已启用"
+      ],
+      "metrics": [
+        "规则总数",
+        "已启用数",
+        "关闭数"
+      ],
+      "desc": "定义实时计算结果的告警触发规则，支持多级告警、沉默窗口和升级路径",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "sliding_index",
+      "name": "滑动指标",
+      "entity": "指标计算",
+      "fields": [
+        "指标名称",
+        "计算窗口",
+        "聚合函数",
+        "分组维度",
+        "过滤条件",
+        "快照频率",
+        "保留时长"
+      ],
+      "statuses": [
+        "草稿",
+        "计算中",
+        "已生效",
+        "已过期"
+      ],
+      "actions": [
+        "启用指标",
+        "停用指标"
+      ],
+      "action_targets": [
+        "草稿",
+        "计算中"
+      ],
+      "metrics": [
+        "指标总数",
+        "已生效数",
+        "过期数"
+      ],
+      "desc": "定义基于滑动窗口的实时指标计算规则，支持多维度分组和条件过滤",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "join_stream",
+      "name": "流关联",
+      "entity": "关联配置",
+      "fields": [
+        "配置名称",
+        "左流源",
+        "右流源",
+        "关联字段",
+        "关联类型",
+        "窗口区间",
+        "输出模式"
+      ],
+      "statuses": [
+        "草稿",
+        "运行中",
+        "已停止"
+      ],
+      "actions": [
+        "启动关联",
+        "停止关联"
+      ],
+      "action_targets": [
+        "草稿",
+        "运行中"
+      ],
+      "metrics": [
+        "配置总数",
+        "运行中数",
+        "停止数"
+      ],
+      "desc": "定义两条流之间的关联计算配置，包括关联字段、窗口区间和输出模式",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "sink_output",
+      "name": "结果落地",
+      "entity": "输出配置",
+      "fields": [
+        "配置名称",
+        "输出类型",
+        "目标地址",
+        "写入模式",
+        "分区策略",
+        "格式转换",
+        "批量大小"
+      ],
+      "statuses": [
+        "草稿",
+        "已生效",
+        "已停用",
+        "写入异常"
+      ],
+      "actions": [
+        "启用输出",
+        "停用输出"
+      ],
+      "action_targets": [
+        "草稿",
+        "已生效"
+      ],
+      "metrics": [
+        "配置总数",
+        "已生效数",
+        "异常数"
+      ],
+      "desc": "管理流式计算结果的输出落地配置，支持多目标写入和分区策略",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "backfill_job",
+      "name": "补数任务",
+      "entity": "补数作业",
+      "fields": [
+        "作业名称",
+        "目标指标",
+        "补数范围",
+        "并行度",
+        "起始位点",
+        "截止位点",
+        "进度比例"
+      ],
+      "statuses": [
+        "待执行",
+        "补数中",
+        "已完成",
+        "部分失败"
+      ],
+      "actions": [
+        "启动补数",
+        "暂停补数"
+      ],
+      "action_targets": [
+        "待执行",
+        "补数中"
+      ],
+      "metrics": [
+        "补数总数",
+        "完成数",
+        "失败数"
+      ],
+      "desc": "管理实时指标的离线补数任务，回填历史区间内的指标计算结果",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "cep_rule",
+      "name": "CEP规则",
+      "entity": "事件序列",
+      "fields": [
+        "序列名称",
+        "事件类型",
+        "匹配顺序",
+        "时间约束",
+        "跳过策略",
+        "动作输出",
+        "最大跨度"
+      ],
+      "statuses": [
+        "草稿",
+        "已部署",
+        "运行中",
+        "已停用"
+      ],
+      "actions": [
+        "部署规则",
+        "停用规则"
+      ],
+      "action_targets": [
+        "草稿",
+        "运行中"
+      ],
+      "metrics": [
+        "规则总数",
+        "运行中数",
+        "停用数"
+      ],
+      "desc": "定义复杂事件处理的序列匹配规则，包括事件顺序、时间约束和跳过策略",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "throughput_mgr",
+      "name": "吞吐管理",
+      "entity": "吞吐配置",
+      "fields": [
+        "配置名称",
+        "数据源",
+        "最大QPS",
+        "并发分区",
+        "背压阈值",
+        "限流策略",
+        "扩容规则"
+      ],
+      "statuses": [
+        "草稿",
+        "已生效",
+        "已触发",
+        "已关闭"
+      ],
+      "actions": [
+        "启用配置",
+        "关闭配置"
+      ],
+      "action_targets": [
+        "草稿",
+        "已生效"
+      ],
+      "metrics": [
+        "配置总数",
+        "已生效数",
+        "触发数"
+      ],
+      "desc": "管理流式计算任务的吞吐容量，配置QPS上限、背压处理和自动扩容规则",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "checkpoint_mgr",
+      "name": "检查点",
+      "entity": "检查点配置",
+      "fields": [
+        "配置名称",
+        "间隔时间",
+        "超时时长",
+        "最大并发",
+        "对齐策略",
+        "保留数量",
+        "外部化路径"
+      ],
+      "statuses": [
+        "草稿",
+        "已启用",
+        "已停用"
+      ],
+      "actions": [
+        "启用检查点",
+        "停用检查点"
+      ],
+      "action_targets": [
+        "草稿",
+        "已启用"
+      ],
+      "metrics": [
+        "配置总数",
+        "已启用数",
+        "停用数"
+      ],
+      "desc": "管理流式任务的检查点策略，配置间隔、超时和外部化存储路径",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "restore_plan",
+      "name": "故障恢复",
+      "entity": "恢复方案",
+      "fields": [
+        "方案名称",
+        "任务范围",
+        "恢复模式",
+        "源位点策略",
+        "状态复用",
+        "跳过坏数据",
+        "验证步骤"
+      ],
+      "statuses": [
+        "草稿",
+        "已演练",
+        "已生效"
+      ],
+      "actions": [
+        "演练方案",
+        "启用方案"
+      ],
+      "action_targets": [
+        "草稿",
+        "已演练"
+      ],
+      "metrics": [
+        "方案总数",
+        "已生效数",
+        "演练数"
+      ],
+      "desc": "定义流式任务的故障恢复方案，包括位点策略和状态复用模式",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "page_shape": "dag-graph",
+      "key": "metric_lineage",
+      "name": "指标血缘",
+      "entity": "血缘记录",
+      "fields": [
+        "记录ID",
+        "指标名称",
+        "上游源端",
+        "中间算子",
+        "输出目标",
+        "更新时间",
+        "版本号"
+      ],
+      "statuses": [
+        "正常",
+        "变更中",
+        "断链"
+      ],
+      "actions": [
+        "刷新血缘",
+        "标记断链"
+      ],
+      "action_targets": [
+        "正常",
+        "变更中"
+      ],
+      "metrics": [
+        "记录总数",
+        "正常数",
+        "断链数"
+      ],
+      "desc": "追踪实时指标从数据源到最终输出的全链路血缘关系",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "late_handler",
+      "name": "迟到处理",
+      "entity": "处理策略",
+      "fields": [
+        "策略名称",
+        "允许延迟",
+        "迟到动作",
+        "旁路输出",
+        "计数方式",
+        "阈值百分比",
+        "标记字段"
+      ],
+      "statuses": [
+        "草稿",
+        "已启用",
+        "已停用"
+      ],
+      "actions": [
+        "启用策略",
+        "停用策略"
+      ],
+      "action_targets": [
+        "草稿",
+        "已启用"
+      ],
+      "metrics": [
+        "策略总数",
+        "已启用数",
+        "停用数"
+      ],
+      "desc": "定义流式计算中迟到数据的处理策略，包括旁路输出和阈值控制",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "page_shape": "dag-graph",
+      "key": "task_topology",
+      "name": "任务拓扑",
+      "entity": "拓扑配置",
+      "fields": [
+        "拓扑名称",
+        "算子链",
+        "并行度",
+        "数据分发",
+        "故障转移",
+        "资源配额",
+        "运行状态"
+      ],
+      "statuses": [
+        "草稿",
+        "已部署",
+        "运行中",
+        "已停止"
+      ],
+      "actions": [
+        "部署拓扑",
+        "停止拓扑"
+      ],
+      "action_targets": [
+        "草稿",
+        "运行中"
+      ],
+      "metrics": [
+        "拓扑总数",
+        "运行中数",
+        "停止数"
+      ],
+      "desc": "管理流式计算任务的DAG拓扑结构，定义算子链、并行度和资源配额",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "data_sampler",
+      "name": "数据采样",
+      "entity": "采样策略",
+      "fields": [
+        "策略名称",
+        "采样方式",
+        "采样比例",
+        "分组键",
+        "保留特征",
+        "样本上限",
+        "采样窗口"
+      ],
+      "statuses": [
+        "草稿",
+        "已启用",
+        "已停用"
+      ],
+      "actions": [
+        "启用策略",
+        "停用策略"
+      ],
+      "action_targets": [
+        "草稿",
+        "已启用"
+      ],
+      "metrics": [
+        "策略总数",
+        "已启用数",
+        "停用数"
+      ],
+      "desc": "管理流式数据的采样策略，支持随机采样和分层采样两种方式",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "debug_trace",
+      "name": "调试追踪",
+      "entity": "调试会话",
+      "fields": [
+        "会话名称",
+        "目标算子",
+        "采样数据",
+        "中间结果",
+        "异常标记",
+        "开始时间",
+        "结束时间"
+      ],
+      "statuses": [
+        "运行中",
+        "已完成",
+        "已终止"
+      ],
+      "actions": [
+        "终止会话"
+      ],
+      "action_targets": [
+        "运行中"
+      ],
+      "metrics": [
+        "会话总数",
+        "运行中数",
+        "完成数"
+      ],
+      "desc": "针对特定算子启动调试会话，采样中间结果用于异常排查",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    },
+    {
+      "key": "aggregate_sink",
+      "name": "聚合落库",
+      "entity": "聚合任务",
+      "fields": [
+        "任务名称",
+        "源指标集",
+        "聚合粒度",
+        "输出表名",
+        "落库频率",
+        "覆盖模式",
+        "分区键"
+      ],
+      "statuses": [
+        "待启动",
+        "运行中",
+        "已完成",
+        "写入失败"
+      ],
+      "actions": [
+        "启动任务",
+        "停止任务"
+      ],
+      "action_targets": [
+        "待启动",
+        "运行中"
+      ],
+      "metrics": [
+        "任务总数",
+        "运行中数",
+        "失败数"
+      ],
+      "desc": "将实时聚合结果按定时频率批量写入目标存储表",
+      "page_shape": "crud-table",
+      "_page_shape_explicit": true
+    }
+  ]
+}
