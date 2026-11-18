@@ -12,6 +12,15 @@
         <strong class="stat-value">{{ card.value }}</strong>
       </article>
     </div>
+
+    <h3 class="section-title">窗口指标结果数据</h3>
+    <div class="stat-row" data-testid="window-metric-cards">
+      <article v-for="card in windowMetricCards" :key="card.label" class="stat-card">
+        <span class="stat-label">{{ card.label }}</span>
+        <strong class="stat-value">{{ card.value }}</strong>
+      </article>
+    </div>
+    <RouterLink class="btn" to="/window_metric_result">进入窗口指标结果工作台</RouterLink>
     <table class="data-table">
       <thead>
         <tr><th>业务模块</th><th>今日新增</th><th>待处理</th><th>异常量</th></tr>
@@ -36,19 +45,31 @@ import { fetchJson } from '@/api/client'
 type Overview = {
   cards: { label: string; value: number }[]
   modules: { name: string; created: number; pending: number; abnormal: number }[]
+  window_metric?: Record<string, number>
 }
 
 const cards = ref<Overview['cards']>([])
 const moduleRows = ref<Overview['modules']>([])
+const windowMetric = ref<Record<string, number>>({})
+
+const windowMetricCards = computed(() => [
+  { label: '批次处理运行', value: windowMetric.value.batch_runs ?? 0 },
+  { label: '已发布批次', value: windowMetric.value.published_batches ?? 0 },
+  { label: '中断批次', value: windowMetric.value.interrupted_batches ?? 0 },
+  { label: '结果记录数', value: windowMetric.value.result_records ?? 0 },
+  { label: '当前可消费记录', value: windowMetric.value.current_records ?? 0 },
+  { label: '完整落地批次', value: windowMetric.value.complete_batches ?? 0 },
+])
 
 onMounted(async () => {
   try {
     const payload = await fetchJson<Overview>('/api/overview')
     cards.value = payload.cards
     moduleRows.value = payload.modules
+    windowMetric.value = payload.window_metric ?? {}
   } catch {
     cards.value = [{"label": "业务模块", "value": 0}, {"label": "今日新增", "value": 0}]
-    moduleRows.value = [{"name": "流式源端", "created": 0, "pending": 0, "abnormal": 0}, {"name": "窗口配置", "created": 0, "pending": 0, "abnormal": 0}, {"name": "计算算子", "created": 0, "pending": 0, "abnormal": 0}, {"name": "状态存储", "created": 0, "pending": 0, "abnormal": 0}, {"name": "水位追踪", "created": 0, "pending": 0, "abnormal": 0}, {"name": "告警策略", "created": 0, "pending": 0, "abnormal": 0}, {"name": "滑动指标", "created": 0, "pending": 0, "abnormal": 0}, {"name": "流关联", "created": 0, "pending": 0, "abnormal": 0}, {"name": "结果落地", "created": 0, "pending": 0, "abnormal": 0}, {"name": "补数任务", "created": 0, "pending": 0, "abnormal": 0}, {"name": "CEP规则", "created": 0, "pending": 0, "abnormal": 0}, {"name": "吞吐管理", "created": 0, "pending": 0, "abnormal": 0}, {"name": "检查点", "created": 0, "pending": 0, "abnormal": 0}, {"name": "故障恢复", "created": 0, "pending": 0, "abnormal": 0}, {"name": "指标血缘", "created": 0, "pending": 0, "abnormal": 0}, {"name": "迟到处理", "created": 0, "pending": 0, "abnormal": 0}, {"name": "任务拓扑", "created": 0, "pending": 0, "abnormal": 0}, {"name": "数据采样", "created": 0, "pending": 0, "abnormal": 0}, {"name": "调试追踪", "created": 0, "pending": 0, "abnormal": 0}, {"name": "聚合落库", "created": 0, "pending": 0, "abnormal": 0}]
+    moduleRows.value = []
   }
 })
 </script>

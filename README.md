@@ -16,9 +16,17 @@
 │   └── vite.config.ts        dev server 配置（open: false）
 ├── backend/                  FastAPI（Python） 后端
 │   ├── app/routers/resource.py  通用查询/导出/登记/动作接口
+│   ├── app/routers/window_metric.py  窗口指标结果专用接口（批次处理/恢复/发布/补算）
 │   ├── app/services/<key>.py    每个模块独立领域逻辑
+│   ├── app/services/window_metric.py  源端批次→窗口指标→结果落地统一能力
 │   ├── app/services/base.py     共享服务骨架
 │   └── app/store.py          内存数据仓库与示例数据
+├── frontend/                 Vue 3 + Vite + TypeScript 前端
+│   ├── src/views/WorkbenchView.vue|tsx  全部模块共享工作台
+│   ├── src/views/WindowMetricView.vue   窗口指标结果工作台（批次处理+完整性报告）
+│   ├── src/views/SinkDetailView.vue     结果落地1号详情页（分组写入状态）
+│   ├── src/data/modules.ts              业务模块配置
+│   ├── src/api/              统一请求封装
 ├── .gitignore
 └── docker-compose.yml
 ```
@@ -70,6 +78,25 @@ npm run dev
 | 数据采样 | `data_sampler` | 采样策略 | 策略名称、采样方式、采样比例 |
 | 调试追踪 | `debug_trace` | 调试会话 | 会话名称、目标算子、采样数据 |
 | 聚合落库 | `aggregate_sink` | 聚合任务 | 任务名称、源指标集、聚合粒度 |
+| 窗口指标结果 | `window_metric_result` | 窗口指标结果 | 来源批次、窗口分组、指标版本、落地状态 |
+| 指标结果台账 | `metric_result_ledger` | 窗口指标台账 | 台账编号、来源批次、窗口分组、指标版本 |
+
+## 窗口指标结果能力
+
+把源端批次、窗口定义与指标记录统一成一份可消费、可发布、可核对的窗口指标结果数据：
+
+- **统一处理链路**：`POST /api/window-metrics/source-batches/produce` 生产源端事件批次，
+  `POST /api/window-metrics/submit` 读取事件、按窗口/分组计算指标并在同一事务内写入结果落地。
+- **并发幂等**：同一处理请求（显式 `request_id` 或由入参派生的幂等键）并发/重复提交只生效一次，
+  其余请求直接返回首次处理结果。
+- **分组事务与中断恢复**：每个窗口分组的指标记录、落库回执、台账在同一事务写入，失败整体回滚；
+  `POST /api/window-metrics/resume` 恢复时跳过已落稳分组，不重复计算或覆盖。
+- **发布门禁**：`POST /api/window-metrics/publish` 仅对完整落地的批次放行，未落地完成的批次不能发布。
+- **两条补算路径**：`POST /api/window-metrics/revise` 支持 `recompute`（重算后统一发布）与
+  `freeze`（冻结已发布窗口、生成独立补算版本），两条路径都只暴露一份当前完整结果，历史版本保留。
+- **核对视图**：`GET /api/window-metrics/results` 清单、`GET /api/window-metrics/runs/{batch_id}/report`
+  落库完整性报告、`GET /api/window-metrics/overview` 概览看板、
+  `GET /api/window-metrics/sink-detail/{entry_id}` 结果落地详情页数据。
 
 ## 约定
 

@@ -34,7 +34,11 @@ def health() -> dict[str, object]:
 @app.get("/api/overview")
 def overview() -> dict[str, object]:
     """运营概览：把各业务模块的待处理量汇总成看板卡片。"""
-    return store.overview()
+    payload = store.overview()
+    # 1号概览看板：窗口指标结果数据汇总。
+    from app.services.window_metric import WindowMetricService
+    payload["window_metric"] = WindowMetricService().overview_cards()
+    return payload
 
 
 # ---- 数据通道 API ----

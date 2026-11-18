@@ -222,6 +222,28 @@ export const MODULES: ModuleMeta[] = [
     actionTargets: {"启动任务": "待启动", "停止任务": "运行中"},
     metrics: ["任务总数", "运行中数", "失败数"],
   },
+  {
+    key: "window_metric_result",
+    name: "窗口指标结果",
+    entity: "窗口指标结果",
+    desc: "按来源批次统一承载窗口指标结果数据、版本与落库完整性报告",
+    fields: ["来源批次", "来源名称", "窗口分组", "窗口起", "窗口止", "指标版本", "结果数值", "事件条数", "落地状态"],
+    statuses: ["待落地", "已落地"],
+    actions: [],
+    actionTargets: {},
+    metrics: ["结果记录数", "当前可消费数", "已发布批次数"],
+  },
+  {
+    key: "metric_result_ledger",
+    name: "指标结果台账",
+    entity: "窗口指标台账",
+    desc: "另一个业务模块同步生成的窗口指标落地台账，与结果版本保持一致",
+    fields: ["台账编号", "来源批次", "窗口分组", "指标版本", "事件条数", "结果摘要", "落地回执"],
+    statuses: ["已登记"],
+    actions: [],
+    actionTargets: {},
+    metrics: ["台账总数", "覆盖版本数", "异常数"],
+  },
 ]
 
 export const MODULE_BY_KEY: Map<string, ModuleMeta> = new Map(

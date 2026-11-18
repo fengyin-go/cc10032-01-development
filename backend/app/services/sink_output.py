@@ -187,6 +187,50 @@ class SinkOutputService(BaseModuleService):
             })
         return result
 
+    def get_window_metric_detail(self, entry_id: int) -> dict[str, Any] | None:
+        """1号详情页：在结果落地详情中呈现窗口指标结果数据与分组写入状态。
+
+        汇总该输出配置名下的窗口指标落库回执、按来源批次的完整性报告，
+        以及当前可消费的窗口指标结果数据。
+        """
+        sink = store.find(self.MODULE, entry_id)
+        if sink is None:
+            return None
+        sink_name = sink.get("配置名称", "")
+        receipts = [
+            r for r in store.rows(self.MODULE)
+            if r.get("receipt_kind") == "window_metric_receipt"
+            and r.get("配置名称") == sink_name
+        ]
+        batch_ids = sorted({r.get("batch_id") for r in receipts if r.get("batch_id")})
+        # 延迟导入避免与窗口指标服务产生模块加载循环。
+        from app.services.window_metric import WindowMetricService
+        metric_service = WindowMetricService()
+        reports = [metric_service.integrity_report(bid) for bid in batch_ids]
+        current_results = [
+            row for row in metric_service.list_results(current_only=True)
+            if row.get("sink") == sink_name
+        ]
+        return {
+            "sink": sink,
+            "receipt_total": len(receipts),
+            "batch_count": len(batch_ids),
+            "batch_ids": batch_ids,
+            "integrity_reports": reports,
+            "current_results": current_results,
+            "group_write_status": [
+                {
+                    "batch_id": r.get("batch_id"),
+                    "group_key": r.get("group_key"),
+                    "window_key": r.get("window_key"),
+                    "version": r.get("metric_version"),
+                    "write_status": r.get("write_status"),
+                    "written_at": r.get("written_at"),
+                }
+                for r in receipts
+            ],
+        }
+
     def domain_snapshot(self) -> dict[str, Any]:
         base = super().domain_snapshot()
         rows = store.rows(self.MODULE)

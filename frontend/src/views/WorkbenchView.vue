@@ -47,7 +47,17 @@
       </thead>
       <tbody>
         <tr v-for="row in rows" :key="String(row.id)" :data-testid="`row-${row.id}`" :data-status="String(row.status)">
-          <td v-for="column in meta.fields" :key="column">{{ row[column] ?? '—' }}</td>
+          <td v-for="column in meta.fields" :key="column">
+            <RouterLink
+              v-if="meta.key === 'sink_output' && column === meta.fields[0]"
+              :to="`/sink_output/${row.id}/detail`"
+              class="link"
+              :data-testid="`sink-detail-${row.id}`"
+            >
+              {{ row[column] ?? '—' }}
+            </RouterLink>
+            <template v-else>{{ row[column] ?? '—' }}</template>
+          </td>
           <td>{{ row.status }}</td>
           <td class="row-actions">
             <button

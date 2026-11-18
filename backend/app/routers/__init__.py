@@ -1,6 +1,7 @@
-"""业务路由汇总：所有模块共用一套资源路由，由领域服务完成分派。"""
+"""业务路由汇总：固定前缀路由先注册，通用资源路由兜底动态路径。"""
 from __future__ import annotations
 
-from app.routers import resource
+from app.routers import resource, window_metric
 
-ROUTERS = [resource]
+# window_metrics 为固定前缀路由，必须排在 /api/{module} 动态路由之前。
+ROUTERS = [window_metric, resource]

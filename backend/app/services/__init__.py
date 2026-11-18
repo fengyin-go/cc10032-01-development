@@ -25,6 +25,8 @@ from app.services.aggregate_sink import AggregateSinkService
 from app.services.stream_job import StreamJobService
 from app.services.anomaly_detector import AnomalyDetectorService
 from app.services.replay_engine import ReplayEngineService
+from app.services.window_metric import WindowMetricService
+from app.services.metric_result_ledger import MetricResultLedgerService
 
 SERVICES: dict[str, BaseModuleService] = {
     "stream_source": StreamSourceService(),
@@ -50,6 +52,8 @@ SERVICES: dict[str, BaseModuleService] = {
     "stream_job": StreamJobService(),
     "anomaly_detector": AnomalyDetectorService(),
     "replay_engine": ReplayEngineService(),
+    "window_metric_result": WindowMetricService(),
+    "metric_result_ledger": MetricResultLedgerService(),
 }
 
 
